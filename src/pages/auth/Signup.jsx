@@ -32,7 +32,7 @@ function Signup() {
 
     try {
       const payload = {
-        full_name: formData.fullName,
+        fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
       };
