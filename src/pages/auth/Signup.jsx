@@ -42,10 +42,15 @@ function Signup() {
       toast.success("Account created. Please log in.");
       navigate("/login");
     } catch (error) {
-      const message =
-        error.response?.data?.detail ||
-        error.response?.data?.message ||
-        "Could not create account. Try again.";
+      let message = "Could not create account. Try again.";
+
+      if (error.response?.data?.detail) {
+        if (Array.isArray(error.response.data.detail)) {
+          message = error.response.data.detail[0]?.msg || message;
+        } else {
+          message = error.response.data.detail;
+        }
+      }
 
       toast.error(message);
     } finally {
