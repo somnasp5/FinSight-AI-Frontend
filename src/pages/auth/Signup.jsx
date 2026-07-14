@@ -1,15 +1,15 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
-import Input from '../../components/common/Input.jsx'
-import Button from '../../components/common/Button.jsx'
-import { signup } from '../../api/authApi.js'
+import Input from "../../components/common/Input.jsx";
+import Button from "../../components/common/Button.jsx";
+import { signup } from "../../api/authApi.js";
 
 function Signup() {
-  const navigate = useNavigate()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -17,27 +17,41 @@ function Signup() {
     watch,
     formState: { errors },
   } = useForm({
-    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' },
-  })
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-  const password = watch('password')
+  const password = watch("password");
 
   const onSubmit = async (formData) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
+
     try {
-      // Backend only needs fullName, email, password.
-      const { confirmPassword, ...payload } = formData
-      await signup(payload)
-      toast.success('Account created. Please log in.')
-      navigate('/login')
+      const payload = {
+        full_name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+      };
+
+      await signup(payload);
+
+      toast.success("Account created. Please log in.");
+      navigate("/login");
     } catch (error) {
       const message =
-        error.response?.data?.message || 'Could not create account. Try again.'
-      toast.error(message)
+        error.response?.data?.detail ||
+        error.response?.data?.message ||
+        "Could not create account. Try again.";
+
+      toast.error(message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -46,14 +60,17 @@ function Signup() {
         Start tracking your spending in minutes.
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 flex flex-col gap-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mt-8 flex flex-col gap-4"
+      >
         <Input
           label="Full name"
           placeholder="Jane Doe"
           error={errors.fullName?.message}
-          {...register('fullName', {
-            required: 'Full name is required',
-            minLength: { value: 2, message: 'Name is too short' },
+          {...register("fullName", {
+            required: "Full name is required",
+            minLength: { value: 2, message: "Name is too short" },
           })}
         />
 
@@ -62,11 +79,11 @@ function Signup() {
           type="email"
           placeholder="you@example.com"
           error={errors.email?.message}
-          {...register('email', {
-            required: 'Email is required',
+          {...register("email", {
+            required: "Email is required",
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: 'Enter a valid email address',
+              message: "Enter a valid email address",
             },
           })}
         />
@@ -76,11 +93,11 @@ function Signup() {
           type="password"
           placeholder="••••••••"
           error={errors.password?.message}
-          {...register('password', {
-            required: 'Password is required',
+          {...register("password", {
+            required: "Password is required",
             minLength: {
               value: 6,
-              message: 'Password must be at least 6 characters',
+              message: "Password must be at least 6 characters",
             },
           })}
         />
@@ -90,25 +107,33 @@ function Signup() {
           type="password"
           placeholder="••••••••"
           error={errors.confirmPassword?.message}
-          {...register('confirmPassword', {
-            required: 'Please confirm your password',
-            validate: (value) => value === password || 'Passwords do not match',
+          {...register("confirmPassword", {
+            required: "Please confirm your password",
+            validate: (value) => value === password || "Passwords do not match",
           })}
         />
 
-        <Button type="submit" fullWidth isLoading={isSubmitting} className="mt-2">
-          {isSubmitting ? 'Creating account...' : 'Create account'}
+        <Button
+          type="submit"
+          fullWidth
+          isLoading={isSubmitting}
+          className="mt-2"
+        >
+          {isSubmitting ? "Creating account..." : "Create account"}
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-graystone-500">
-        Already have an account?{' '}
-        <Link to="/login" className="font-medium text-primary-600 hover:underline">
+        Already have an account?{" "}
+        <Link
+          to="/login"
+          className="font-medium text-primary-600 hover:underline"
+        >
           Log in
         </Link>
       </p>
     </div>
-  )
+  );
 }
 
-export default Signup
+export default Signup;
